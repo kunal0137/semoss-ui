@@ -1272,6 +1272,15 @@ importers:
       react-router:
         specifier: 8.3.0
         version: 8.3.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react-vega:
+        specifier: ^7.6.0
+        version: 7.7.1(react@19.2.8)(vega-lite@6.4.1(vega@6.2.0))(vega@6.2.0)
+      vega:
+        specifier: ^6.2.0
+        version: 6.2.0
+      vega-lite:
+        specifier: ^6.2.0
+        version: 6.4.1(vega@6.2.0)
       zustand:
         specifier: ^5.0.0
         version: 5.0.15(@types/react@19.2.18)(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))

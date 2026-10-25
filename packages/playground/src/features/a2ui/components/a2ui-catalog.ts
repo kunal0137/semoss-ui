@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 import type { A2uiAdapterProps } from "./a2ui-adapter.types";
 import { A2uiButton } from "./a2ui-button";
 import { A2uiCard } from "./a2ui-card";
+import { A2uiChart } from "./a2ui-chart";
 import { A2uiCheckBox } from "./a2ui-check-box";
 import { A2uiChoicePicker } from "./a2ui-choice-picker";
 import { A2uiColumn } from "./a2ui-column";
@@ -19,7 +20,7 @@ import { A2uiTextField } from "./a2ui-text-field";
 
 /**
  * The components an agent may ask for: the basic catalog less `Modal`, which a
- * chat card does not need yet, plus `Table`. The list is closed. A name that is not here
+ * chat card does not need yet, plus `Chart` and `Table`. The list is closed. A name that is not here
  * draws a placeholder, never raw HTML.
  */
 export const A2UI_CATALOG: Readonly<
@@ -36,6 +37,7 @@ export const A2UI_CATALOG: Readonly<
 	Card: A2uiCard,
 	Tabs: A2uiTabs,
 	Divider: A2uiDivider,
+	Chart: A2uiChart,
 	Table: A2uiTable,
 	Button: A2uiButton,
 	TextField: A2uiTextField,
