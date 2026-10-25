@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo } from "react";
 import { Markdown } from "@semoss/ui/next";
+import { fenceA2uiTags } from "@/features/a2ui/protocol/a2ui-state";
 import { type ChunkStatus, useRoot } from "@/hooks";
 import { useMarkdownTypewriter } from "@/hooks/use-markdown-typewriter";
 import type { ResponseMessageStore } from "@/stores";
@@ -49,8 +50,9 @@ export const ResponseMessageTextMd: React.FC<ResponseMessageTextMdProps> =
 
 		// While active, show what the typewriter has revealed; otherwise (done)
 		// render the full content directly.
-		const fullRenderedText =
-			status === "active" ? typewriter.rendered : content;
+		const fullRenderedText = fenceA2uiTags(
+			status === "active" ? typewriter.rendered : content,
+		);
 
 		// ── Markdown components ───────────────────────────────────────────────────
 		const isPreviewLoading = status !== "done";

@@ -17,6 +17,7 @@ import {
 } from "@semoss/ui/next";
 import { downloadBlob } from "@semoss/utility/browser";
 import { escapeCsvValue } from "@semoss/utility/csv";
+import { A2uiBlock } from "@/features/a2ui/a2ui-block";
 import type { RoomStore } from "@/stores";
 import { BlockHeader } from "./block-header";
 import { CodePreviewBlock } from "./code-preview-block";
@@ -234,6 +235,24 @@ export const createMarkdownComponents = (
 					code={code}
 					isLoading={isHtmlPreviewLoading}
 					room={room}
+				/>
+			);
+		}
+
+		if (rawLang === "a2ui") {
+			return (
+				<A2uiBlock
+					code={code}
+					isLoading={isHtmlPreviewLoading}
+					room={room}
+					fallback={
+						<CodePreviewBlock
+							code={code}
+							language="json"
+							rawLanguage="json"
+							room={room}
+						/>
+					}
 				/>
 			);
 		}
