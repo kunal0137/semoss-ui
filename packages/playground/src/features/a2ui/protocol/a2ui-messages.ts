@@ -113,12 +113,27 @@ const STARTS_ENVELOPE = /^\{\s*"version"/;
 const isLineStart = (text: string, index: number): boolean =>
 	text.slice(text.lastIndexOf("\n", index - 1) + 1, index).trim() === "";
 
+/**
+ * An envelope line that lost closing brackets, the slip models make most on
+ * their longest line, read by closing what is still open, innermost first.
+ */
+const closeLine = (line: string, open: string[]): unknown => {
+	const closers = open
+		.map((opener) => (opener === "{" ? "}" : "]"))
+		.reverse()
+		.join("");
+	const parsed = tryParseJson(line.trimEnd() + closers);
+	return parsed === undefined ? INVALID : parsed;
+};
+
 const splitObjects = (text: string): unknown[] => {
 	const found: unknown[] = [];
 	let depth = 0;
 	let start = -1;
 	let inString = false;
 	let isEscaped = false;
+	// the brackets open inside the current object, to close a line that lost some
+	const open: string[] = [];
 	for (let index = 0; index < text.length; index++) {
 		const char = text[index];
 		if (inString) {
@@ -133,26 +148,44 @@ const splitObjects = (text: string): unknown[] => {
 			inString = depth > 0;
 		} else if (char === "{") {
 			// A line that opens a new envelope while one is still open means the open one
-			// lost a closing brace: give it up, so one slip does not swallow what follows.
+			// lost a closing brace: close it, so one slip does not swallow what follows.
 			if (
 				depth > 0 &&
 				STARTS_ENVELOPE.test(text.slice(index)) &&
 				isLineStart(text, index)
 			) {
-				found.push(INVALID);
+				found.push(closeLine(text.slice(start, index), open));
 				depth = 0;
+				open.length = 0;
 			}
 			if (depth === 0) {
 				start = index;
 			}
 			depth++;
+			open.push("{");
+		} else if (char === "[" && depth > 0) {
+			open.push("[");
+		} else if (char === "]" && depth > 0) {
+			open.pop();
 		} else if (char === "}" && depth > 0) {
 			depth--;
+			open.pop();
 			if (depth === 0) {
 				const parsed = tryParseJson(text.slice(start, index + 1));
 				found.push(parsed === undefined ? INVALID : parsed);
 			}
 		}
+	}
+	// An envelope still open at the end is an object being written over several
+	// lines, unless it is one JSON Lines line: then it lost its closing brackets.
+	// (A streaming reply only reaches here in whole lines, see `wholeLines`.)
+	const rest = depth > 0 ? text.slice(start) : "";
+	if (
+		STARTS_ENVELOPE.test(rest) &&
+		isLineStart(text, start) &&
+		!rest.trimEnd().includes("\n")
+	) {
+		found.push(closeLine(rest, open));
 	}
 	return found;
 };
